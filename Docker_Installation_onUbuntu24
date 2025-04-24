@@ -1,0 +1,91 @@
+1. Update the Package Index:
+
+Open a terminal and run the following command to update the package index. This ensures you have the latest package information:
+
+sudo apt update
+
+2. Install Prerequisites:
+
+Install packages to allow apt to use a repository over HTTPS:
+
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+3. Add Docker's Official GPG Key:
+
+This step adds Docker's GPG key to your system, allowing apt to verify the authenticity of the Docker packages.
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+4. Add the Docker Repository:
+
+Add the Docker repository to your system's list of software sources. This tells apt where to find the Docker packages. Make sure to use the correct Ubuntu codename (e.g., jammy for Ubuntu 22.04, focal for Ubuntu 20.04, bionic for Ubuntu 18.04). You can usually find your codename with lsb_release -cs. I will assume jammy for Ubuntu 22.04. If you are using a different version, replace jammy with the correct codename.
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+5. Update the Package Index Again:
+
+Update the package index again to include the new Docker repository:
+
+sudo apt update
+
+6.Install Docker Engine:
+
+Now, install the Docker Engine, containerd, and Docker Compose:
+
+sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+7.Verify the Installation:
+
+Check if Docker is running:
+
+sudo systemctl status docker
+
+If it's not running, start it:
+
+sudo systemctl start docker
+
+You can also enable Docker to start automatically on boot:
+
+sudo systemctl enable docker
+
+8. Run the "Hello World" Container (Test):
+
+Run a simple "Hello World" container to verify that Docker is working correctly:
+
+sudo docker run hello-world
+
+This command downloads a test image and runs it in a container. If everything is set up correctly, you'll see a message confirming that Docker is working.
+
+9. Manage Docker as a Non-Root User (Optional but Recommended):
+
+By default, you need to use sudo to run Docker commands. To avoid this, you can add your user to the docker group.
+
+sudo usermod -aG docker $USER
+newgrp docker
+
+Log out and log back in for this change to take effect. After logging back in, you should be able to run Docker commands without sudo. Test it:
+
+docker run hello-world
+
+Explanation of Key Commands
+
+apt update: Refreshes the package lists.
+apt install: Installs packages.
+curl: Downloads data from a URL.
+gpg: GNU Privacy Guard, used for verifying the authenticity of packages.
+echo ... | sudo tee ...: Adds the Docker repository to your system's software sources.
+systemctl: Manages system services (like starting, stopping, and enabling Docker).
+docker run: Runs a Docker container.
+usermod: Modifies user account information.
+newgrp: Changes the current group ID during a login session.
+Troubleshooting
+
+"Unable to locate package docker-ce": Double-check that you've added the Docker repository correctly and that you're using the correct Ubuntu codename in the repository URL. Also, make sure you've run sudo apt update after adding the repository.
+Permissions Errors: If you're getting permission errors when running Docker commands, make sure you've added your user to the docker group and logged out and back in.
+Docker Service Not Running: Use sudo systemctl status docker to check the status of the Docker service. If it's not running, use sudo systemctl start docker to start it. Check the logs with journalctl -u docker.service for more detailed error messages.
+Proxy Issues: If you are behind a proxy, you may need to configure Docker to use the proxy. See the Docker documentation for details.
+Important Considerations
+
+Security: Be mindful of the images you run in Docker containers. Only use images from trusted sources.
+Resource Usage: Docker containers can consume significant resources (CPU, memory, disk space). Monitor your system's resource usage.
+Docker Compose: Docker Compose is a tool for defining and running multi-container Docker applications. It's very useful for more complex projects. It is now included as a plugin.
