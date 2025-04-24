@@ -71,14 +71,42 @@ docker logs abc123
 
 
 15. docker inspect <container_id>
-o Provides detailed information about a container.
-o docker inspect abc123
+Provides detailed information about a container.
+docker inspect abc123
+
+
+
+cat Dockerfile 
+# Base Image 
+FROM nginx:alpine
+# MAINTAINER of the Dockerfile
+MAINTAINER Bikram <bikramatmedium@gmail.com>
+#Copy the index.html file /usr/share/nginx/html/
+COPY index.html /usr/share/nginx/html/
+#Expose Nginx Port
+EXPOSE 80
+#Start NginxService 
+CMD ["nginx", "-g", "daemon off;"]
+root@ip-172-31-93-200:~# 
+root@ip-172-31-93-200:~# cat index.html 
+My first Dockerfile with Nginx!! Version-1.0
+
+docker build -t nginx-app .
+
+root@ip-172-31-93-200:~# docker run -d -p 80:80 --name Nginx-app nginx-app:latest
+4828c765e2a7770da747f470b5c8ab2b2a31eef8668d64ad5e3e8d0974c7cc4c
+
 16. docker build -t <image_name> <Dockerfile_path>
-o Builds an image from a Dockerfile.
-o docker build -t my_image .
+Builds an image from a Dockerfile.
+docker build -t my_image .
+
+
+
 17. docker tag <image_id> repository:tag
 o Tags an image for a repository.
 o docker tag abc123 myrepo/myimage:v1
+
+
 18. docker push repository:tag
 o Pushes an image to a Docker registry.
 o docker push myrepo/myimage:v1
