@@ -58,13 +58,18 @@ docker rm ebdae7a1a0ce 615f2500ba29 0ca2f4e6a8cc
 
 
 13. docker exec -it <container_id> <command>
-Executes a command in a running container.
+Executes a command in a running container. (You cannot enter into a stopped container)
+docker exec -it abc123 /bin/bash
+docker run --name my-ubuntu-mine -it -d ubuntu:latest /bin/bash
+docker run -d ubuntu:latest sleep infinity
 docker exec -it abc123 /bin/bash
 
 
 14. docker logs <container_id>
-o Displays the logs of a container.
-o docker logs abc123
+Displays the logs of a container.
+docker logs abc123
+
+
 15. docker inspect <container_id>
 o Provides detailed information about a container.
 o docker inspect abc123
