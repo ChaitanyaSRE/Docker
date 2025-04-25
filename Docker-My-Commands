@@ -100,41 +100,52 @@ root@ip-172-31-93-200:~# docker run -d -p 80:80 --name Nginx-app nginx-app:lates
 Builds an image from a Dockerfile.
 docker build -t my_image .
 
-
-
 17. docker tag <image_id> repository:tag
-o Tags an image for a repository.
-o docker tag abc123 myrepo/myimage:v1
+Tags an image for a repository.
+docker tag abc123 myrepo/myimage:v1
+docker tag nginx-app chaitanya795/nginx-app:latest
 
 
 18. docker push repository:tag
-o Pushes an image to a Docker registry.
-o docker push myrepo/myimage:v1
+Pushes an image to a Docker registry.
+docker push myrepo/myimage:v1
+docker push chaitanya795/nginx-app
+
 19. docker pull repository:tag
-o Pulls an image from a Docker registry.
-o docker pull myrepo/myimage:v1
+Pulls an image from a Docker registry.
+docker pull myrepo/myimage:v1
+docker pull chaitanya795/nginx-app:latest
+
 20. docker network ls
-o Lists all Docker networks.
-o docker network ls
+Lists all Docker networks.
+docker network ls
+
 21. docker network create <network_name>
-o Creates a new Docker network.
-o docker network create my_network
+Creates a new Docker network.
+docker network create my_network
+docker network create my_own
+
 22. docker network rm <network_name>
-o Removes an existing Docker network.
-o docker network rm my_network
+Removes an existing Docker network.
+docker network rm my_network
+docker network rm my_own
+
 23. docker volume ls
-o Lists all Docker volumes.
-o docker volume ls
+Lists all Docker volumes.
+docker volume ls
+
 24. docker volume create <volume_name>
-o Creates a new Docker volume.
-o docker volume create my_volume
+Creates a new Docker volume.
+docker volume create my_volume
+
 25. docker volume rm <volume_name>
-o Removes a Docker volume.
-o docker volume rm my_volume
+Removes a Docker volume.
+docker volume rm my_volume
+
 26. docker-compose up
-o Starts services defined in a docker-compose.yml
-file.
-o docker-compose up
+Starts services defined in a docker-compose.ymlfile.
+docker-compose up
+
 27. docker-compose down
 o Stops and removes services created by Docker
 Compose.
