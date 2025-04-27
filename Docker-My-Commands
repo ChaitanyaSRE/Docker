@@ -153,53 +153,115 @@ o docker-compose down
 28. docker-compose ps
 o Lists the status of Docker Compose services.
 o docker-compose ps
-29. docker commit <container_id>
-<new_image_name>
-o Creates a new image from a container's changes.
-o docker commit abc123 my_image:v2
+
+29. docker commit <container_id> <new_image_name>
+Creates a new image from a container's changes.
+docker commit abc123 my_image:v2
+docker commit 6a68b7146604 nginx-app:v3.0
+
 30. docker system prune
-o Removes unused data (stopped containers,
-networks, etc.).
-o docker system prune
+Removes unused data (stopped containers,networks, etc.).
+docker system prune
+
 31. docker stats
-o Displays a live stream of container resource usage
-statistics.
-o docker stats
+Displays a live stream of container resource usage statistics.
+docker stats
+____________________________________________________________________________________________________
+Understanding the docker stats Output
+
+When you run docker stats, you'll see a table with the following columns (the exact format might vary slightly depending on your Docker version):
+
+CONTAINER ID: The unique identifier for the container. This is a shortened version of the full container ID.
+
+NAME: The name of the container. You can assign a name to a container when you run it using the --name option. If you don't specify a name, Docker will generate a random one.
+
+CPU %: The percentage of the host's CPU that the container is currently using. This is a relative value, indicating how much CPU time the container is consuming compared to the total CPU time available on the host. A value of 100% means the container is using one full CPU core. If you have multiple CPU cores, a container can exceed 100%.
+
+MEM USAGE / LIMIT:
+
+MEM USAGE: The amount of memory the container is currently using.
+LIMIT: The maximum amount of memory the container is allowed to use. This limit can be set when you run the container using the --memory or -m option. If no limit is set, the container can use all available memory on the host.
+MEM %: The percentage of the host's total memory that the container is using. This is calculated as (MEM USAGE / Total Host Memory) * 100. It's important to note that this is relative to the host's total memory, not the container's memory limit (if one is set).
+
+NET I/O: The amount of data the container has sent and received over the network.
+
+NET I/O is further broken down into:
+RX: Received data (bytes).
+TX: Transmitted data (bytes).
+BLOCK I/O: The amount of data the container has read from and written to the block storage (disk).
+
+BLOCK I/O is further broken down into:
+READ: Data read from disk (bytes).
+WRITE: Data written to disk (bytes).
+PIDS: The number of processes (threads) running inside the container.
+
+Example Output:
+
+CONTAINER ID   NAME                  CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O     PIDS
+a1b2c3d4e5f6   my-web-app            1.23%     123.4MiB / 2GiB     6.17%     1.23kB / 456B   1.23MB / 456kB   12
+7890abcdef12   my-database           0.45%     567.8MiB / 4GiB     14.20%    5.67kB / 890B   5.67MB / 890kB   45
+
+______________________________________________________________________________________________________________________________________________
+
+
 32. docker save -o <output_file> <image_name>
-o Saves an image to a tar archive.
-o docker save -o my_image.tar my_image:v1
+Saves an image to a tar archive.
+docker save -o my_image.tar my_image:v1
+
 33. docker load -i <input_file>
-o Loads an image from a tar archive.
-o docker load -i my_image.tar
+Loads an image from a tar archive.
+docker load -i my_image.tar
+
+docker export and docker import are commands used for working with container file systems, rather than entire images.
 34. docker export <container_id> -o <output_file>
-o Exports a container's filesystem to a tar archive.
-o docker export abc123 -o container_fs.tar
+Exports a container's filesystem to a tar archive.
+docker export abc123 -o container_fs.tar
+docker export b3edda74be2e -o nginx-app:v3.tar
+docker export b3edda74be2e | gzip > nginx-app:v3.tar.gz
+vi nginx-app:v3.tar.gz
+
 35. docker import <input_file>
-o Imports a container’s filesystem from a tar archive
-as an image.
-o docker import container_fs.tar
+Imports a container’s filesystem from a tar archive as an image.
+docker import container_fs.tar
+docker import nginx-app:v3.tar my-nginx-image:latest
+gzip -dc nginx-app:v3.tar.gz | docker import - my-new1-image:latest
+
+
+The docker pause command suspends all processes within a specified container. This effectively freezes the container's state, 
+preventing it from consuming CPU resources or performing any further operations. The container remains in memory, 
+and its network connections are preserved.
 36. docker pause <container_id>
- Pauses all processes within a container.
- docker pause abc123
+Pauses all processes within a container.
+docker pause abc123
+
+
+The docker unpause command resumes all processes within a paused container. This restores the container to its previous state, 
+allowing it to continue executing from where it was paused.
 37. docker unpause <container_id>
- Unpauses a paused container, resuming its processes.
- docker unpause abc123
+Unpauses a paused container, resuming its processes.
+docker unpause abc123
+
 38. docker rename <old_name> <new_name>
- Renames an existing container.
- docker rename old_container_name
-new_container_name
+Renames an existing container.
+docker rename old_container_name new_container_name
+docker rename b3edda74be2e mycontainer
+
 39. docker update <container_id> --cpus <value>
- Updates the resource limits for a container (e.g., CPU).
- docker update abc123 --cpus 2
+Updates the resource limits for a container (e.g., CPU).
+docker update abc123 --cpus 2
+docker update 6a68b7146604  --cpus 1 
+
 40. docker attach <container_id>
  Attaches to a running container’s standard input, output,
 and error streams.
  docker attach abc123
+
 41. docker cp <container_id>:/path/to/file
 <host_destination>
  Copies files from a container to the host machine.
  docker cp abc123:/var/log/nginx.log
 /home/user/nginx.log
+
 42. docker diff <container_id>
  Shows the changes made to a container's filesystem.
  docker diff abc123
