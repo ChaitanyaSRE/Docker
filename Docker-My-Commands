@@ -122,18 +122,6 @@ Pulls an image from a Docker registry.
 docker pull myrepo/myimage:v1
 docker pull chaitanya795/nginx-app:latest
 
-22. docker volume ls
-Lists all Docker volumes.
-docker volume ls
-
-23. docker volume create <volume_name>
-Creates a new Docker volume.
-docker volume create my_volume
-
-24. docker volume rm <volume_name>
-Removes a Docker volume.
-docker volume rm my_volume
-
 
 25. docker commit <container_id> <new_image_name>
 Creates a new image from a container's changes.
@@ -331,22 +319,71 @@ It removes Docker networks that are not currently used by any container.
 It also removes volumes that are not used by any container. Note that this requires the --volumes flag to be explicitly specified
 
 docker load -i k8simg.tar.gz
+
+
 _________________________________________________________________________________________
 
+DOCKER STORAGE:
+2 types:
+1. docker volumes
+2. bind mounts
+
+syntax: docker run -it --mount source=source_folder,destination=destination_folder -d <contianername>
+
+docker volume ls
+docker volume create demo-vol
+docker volume ls
+docker pull centos:7
+docker run -it --mount source=demo-vol,destination=/app -d centos:7
+docker exec -it 5ef41b0f18df bash 
+cd /app
+echo "Hello world" > hello.txt
+ls
+exit
+docker ps
+docker rm -f <containerid>
+docker run -it --mount source=demo-vol,destination=/app -d centos:7
+
+Any of the file inside the container in the folder /app , will be stored on the docker volume ,
+whenever a new container creates , this volume will be attach and then the data is persisted even when you run the same 
+old image with old container
 
 
+2. BIND MOUNTS:
+docker run -it -v <source_directory>:<destination_directory> -d imagename
+mkdir mount
+cd mount
+vi abc.txt
+Hello
+docker run -it -v /root/mount:/demo -d ubuntu
+/demo = container path 
+/root/mount = mountpath in host
 
-56. docker volume create <volume_name>
+docker exec -it 5ef41b0f18df bash 
+ls 
+cd demo
+ls
+1.txt
+
+If you create the file in /root/mount the same file will see in container  under /demo
+
+
+22. docker volume ls
+Lists all Docker volumes.
+docker volume ls
+
+23. docker volume create <volume_name>
 Creates a new Docker volume.
 docker volume create my_volume
 
-57. docker volume ls
-Lists all Docker volumes.
-docker volume ls
+24. docker volume rm <volume_name>
+Removes a Docker volume.
+docker volume rm my_volume
 
 58. docker volume inspect <volume_name>
 Shows detailed information about a specific volume.
 docker volume inspect my_volume
+_________________________________________________________________________________________________________________________
 
 DOCKER COMPOSE :
 
