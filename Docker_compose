@@ -1,0 +1,77 @@
+DOCKER COMPOSE :
+
+59. docker-compose up
+Starts services defined in a docker-compose.ymlfile.
+docker-compose up
+
+60. docker-compose down
+Stops and removes services created by Docker Compose.
+docker-compose down
+
+61. docker-compose ps
+Lists the status of Docker Compose services.
+docker-compose ps
+
+62. docker-compose up
+Starts containers defined in a docker-compose.yml file.
+docker-compose up
+
+63. docker-compose down
+Stops and removes containers, networks, images, and volumes created by docker-compose up.
+docker-compose down
+
+64. docker-compose build
+Builds or rebuilds services defined in the docker-compose.yml file.
+docker-compose build
+
+65. docker-compose stop
+Stops running containers without removing them.
+docker-compose stop
+
+66. docker-compose restart
+Restarts all services in a docker-compose setup.
+docker-compose restart
+
+67. docker-compose ps
+Lists all containers in a docker-compose environment.
+docker-compose ps
+
+68. docker-compose logs
+Displays output from the running containers managed by docker-compose.
+docker-compose logs
+
+69. docker-compose rm
+Removes stopped service containers.
+docker-compose rm
+
+70. docker-compose pull
+Pulls images for services defined in the docker-compose.yml file.
+docker-compose pull
+
+71. docker-compose exec <service_name> <command>
+Executes a command inside a running service container.
+docker-compose exec web ls /app
+
+72. docker-compose scale <service_name>=<num_instances>
+Scales the number of containers for a service.
+docker-compose scale web=3
+
+73. docker daemon
+Runs the Docker daemon manually (typically done automatically).
+docker daemon
+
+74. docker logs -f <container_id>
+Follows the logs of a container in real-time.
+docker logs -f abc123
+
+75. docker kill <container_id>
+Forcefully stops a running container.
+docker kill abc123
+
+76. docker top <container_id>
+Shows running processes within a container.
+docker top abc123
+
+77. docker port <container_id>
+Displays a list of port mappings for a container.
+docker port abc123
