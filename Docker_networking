@@ -1,0 +1,103 @@
+DOCKER NETWORKING:
+
+
+Docker networking is how Docker containers communicate with each other and the outside world. By default, Docker creates a private network for containers within the same host, allowing them to communicate using their container names as hostnames. Docker also provides various network drivers to create different types of networks, such as bridge, host, overlay, and macvlan, each serving different use cases. These networks enable containers to be isolated, interconnected, and exposed to external networks as needed.
+
+Okay, let's break down the differences between the main Docker network drivers: bridge, host, overlay, and macvlan.
+
+1. Bridge Network (Default)
+
+How it works: The bridge network is the default network that Docker uses. When you run a container without specifying a network, it attaches to this bridge network (usually named bridge or docker0). Docker creates a virtual interface on the host (the bridge) and assigns each container a virtual interface connected to that bridge. Containers on the same bridge network can communicate with each other using their container names as hostnames (Docker's built-in DNS resolution handles this).
+Isolation: Provides isolation between containers and the host. Containers on the bridge network are in a separate network namespace from the host.
+Connectivity: To expose a container's port to the outside world, you need to use port mapping (e.g., -p 8080:80). This maps a port on the host to a port inside the container.
+Use Cases:
+Most common use case for single-host Docker deployments.
+Good for development and testing environments.
+Suitable when you want to isolate containers from the host network.
+Limitations: Not ideal for multi-host deployments without additional configuration (like Docker Swarm or other networking solutions).
+
+2. Host Network
+How it works: A container using the host network shares the host's network namespace directly. This means the container uses the host's network interfaces and IP address.
+Isolation: No network isolation. The container is essentially running directly on the host's network.
+Connectivity: Containers can access the network directly without port mapping. If a container binds to port 80, it's directly bound to port 80 on the host.
+Use Cases:
+When you need the container to have the best possible network performance (minimal overhead).
+When the container needs to interact with network services running directly on the host.
+When you don't need network isolation.
+Limitations:
+Port conflicts: If multiple containers try to bind to the same port, you'll have a conflict.
+Security: Reduced security due to lack of isolation.
+Not portable: Relies on the host's network configuration.
+
+3. Overlay Network
+How it works: Overlay networks connect multiple Docker daemons together and enable swarm services to communicate with each other. They create a distributed network across multiple hosts. Docker Swarm mode uses overlay networks to manage communication between services running on different nodes in the swarm.
+Isolation: Provides network isolation.
+Connectivity: Containers on the same overlay network can communicate with each other regardless of which host they are running on.
+Use Cases:
+Microservices architectures deployed across multiple hosts (Docker Swarm).
+When you need containers on different hosts to communicate as if they were on the same network.
+Orchestration platforms like Docker Swarm or Kubernetes often use overlay networks.
+Requirements: Requires a key-value store (like Consul, etcd, or ZooKeeper) for service discovery and network management.
+Example: If you have a web application running in containers on three different servers, an overlay network allows those containers to communicate with a database container running on a fourth server, all as if they were on the same local network.
+
+4. Macvlan Network
+How it works: Macvlan networks allow you to assign a container a MAC address, making it appear as a physical device on your network. The container gets its own IP address from your network's DHCP server (or you can assign a static IP).
+Isolation: Provides a degree of isolation, but the container is directly exposed to the external network.
+Connectivity: Containers can communicate directly with other devices on the network, including devices outside the Docker host.
+Use Cases:
+When you need containers to have their own MAC addresses and appear as separate devices on your network.
+When you need containers to be directly accessible from the external network without port mapping.
+Networking appliances or applications that require a MAC address.
+Requirements: Your network infrastructure needs to support Macvlan.
+Limitations:
+Can be more complex to set up than bridge networks.
+Some network adapters don't support Macvlan in promiscuous mode (required for container-to-container communication on the same host). This can be worked around with ipvlan.
+
+
+51. docker network ls
+Lists all Docker networks.
+docker network ls
+
+52. docker network create <network_name>
+Creates a new Docker network.
+docker network create my_network
+docker network create my_own
+
+53. docker network rm <network_name>
+Removes an existing Docker network.
+docker network rm my_network
+docker network rm my_own
+
+55. docker network inspect <network_name>
+Shows detailed information about a specific network.
+docker network inspect my_network
+
+docker network ls
+docker network inspect bridge 
+docker create --subnet 10.1.0.0/24 --gateway 10.1.0.1 mybridge-1
+docker network ls
+docker network rm mybridge-1
+docker network create --subnet 10.1.0.0/16 --gateway 10.1.0.1 --ip-range=10.1.3.0/24 --driver=bridge 
+--label=myownnetwork bridge01
+docker network ls
+docker network inspect bridge01
+docker images
+docker pull centos
+docker run -it centos
+ctrl+p+q
+hostname -i
+172.17.0.3
+docker run -it --name 1centos --net bridge01 centos
+hostname -i
+10.1.3.0(my own network)
+ctrl+p+q
+docker run -it --name 2centos --net bridge01 centos
+hostname -i
+10.1.3.1(my own network)
+exit
+docker run -it --name 3centos --net bridge01 centos
+hostname -i
+10.1.3.1(my own network because my previous container stops)
+docker run -it --name 4centos --net bridge01 centos
+hostname -i
+10.1.3.2(my own network because my previous container stops)
