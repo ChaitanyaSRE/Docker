@@ -1,0 +1,23 @@
+Key Differences:
+
+CMD (Command): Provides default commands and/or arguments for the container to execute when it starts. These defaults can be overridden when you run the container using docker run. Think of it as the suggested command to run.
+
+ENTRYPOINT: Configures the container to run as an executable. It specifies the main process that will be executed when the container starts. Arguments passed to docker run are appended to the ENTRYPOINT instruction. Think of it as the required command to run.
+
+Examples:
+
+1. CMD Example (Simple):
+
+vi Dockerfile
+FROM ubuntu:latest
+CMD ["echo", "Hello, world!"]
+
+docker build -t cmdtest .
+
+docker run -it  cmdtest:latest
+output:  Hello, world!
+
+docker run -it  cmdtest:latest echo "Goodbye, world!" 
+Goodbye, world!
+
+
