@@ -20,4 +20,131 @@ output:  Hello, world!
 docker run -it  cmdtest:latest echo "Goodbye, world!" 
 Goodbye, world!
 
+Can we 2 cmds/2 ENTRYPOINT instructions in a single dockerfile 
 
+No, you cannot use two CMD or two ENTRYPOINT instructions in a single Dockerfile. If you specify multiple CMD or ENTRYPOINT instructions, only the last one will be used. Docker will simply ignore the previous ones.
+
+FROM ubuntu:latest
+CMD ["echo", "First command"]
+CMD ["echo", "Second command"]
+
+or 
+
+FROM ubuntu:latest
+ENTRYPOINT ["echo", "First command"]
+ENTRYPOINT ["echo", "Second command"]
+
+
+docker build -t cmdtest . 
+docker run -it cmdtest:latest
+Second command
+
+
+Python file example :
+
+root@ip-172-31-93-200:~# cat app.py 
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "Hello from Flask!"
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=8000)
+
+root@ip-172-31-93-200:~# cat Dockerfile 
+FROM python:3.9-slim-buster
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app.py .
+
+# Expose the port
+EXPOSE 8000
+
+# Entrypoint: Gunicorn WSGI server
+ENTRYPOINT ["gunicorn"]
+
+# Default command: app:app (run the Flask app)
+CMD ["app:app", "-b", "0.0.0.0:8000", "-w", "3"]
+
+root@ip-172-31-93-200:~# cat requirements.txt 
+Flask==2.3.3
+gunicorn==20.1.0
+root@ip-172-31-93-200:~# 
+
+
+
+Application Overview:
+
+This application is a very simple web server built using Python, Flask, and Gunicorn.
+
+Flask: Flask is a lightweight Python web framework. It provides the tools and libraries you need to create web applications, such as routing, templating, and request handling. In this example, the Flask application is defined in the app.py file. It has a single route (/) that returns the text "Hello from Flask!".
+
+Gunicorn: Gunicorn is a WSGI (Web Server Gateway Interface) server. It's a production-ready web server that can handle multiple concurrent requests. It acts as an intermediary between the Flask application and the outside world (e.g., a web browser). Gunicorn is responsible for receiving HTTP requests, passing them to the Flask application, and then sending the responses back to the client.
+
+Docker: Docker is a containerization platform that allows you to package your application and its dependencies into a single, portable unit. This makes it easy to deploy your application to different environments without having to worry about compatibility issues.
+
+Dockerfile Breakdown:
+
+The Dockerfile defines how to build the Docker image for this application.
+
+FROM python:3.9-slim-buster: Specifies the base image to use. In this case, it's a slimmed-down version of Python 3.9.
+WORKDIR /app: Sets the working directory inside the container to /app.
+COPY requirements.txt .: Copies the requirements.txt file (which lists the application's dependencies) into the container.
+RUN pip install --no-cache-dir -r requirements.txt: Installs the dependencies listed in requirements.txt using pip. The --no-cache-dir option helps to reduce the size of the Docker image.
+COPY app.py .: Copies the Flask application code (app.py) into the container.
+EXPOSE 8000: Declares that the container will listen on port 8000. This is important for networking.
+ENTRYPOINT ["gunicorn"]: This is the key part. It sets gunicorn as the main executable for the container. When the container starts, it will always run gunicorn.
+CMD ["app:app", "-b", "0.0.0.0:8000"]
+
+: This provides the default arguments to gunicorn.
+app:app: Specifies the WSGI application to run. It tells Gunicorn to look for a module named app and an application instance named app within that module (i.e., in the app.py file).
+-b 0.0.0.0:8000: Specifies the binding address. It tells Gunicorn to listen on all interfaces (0.0.0.0) on port 8000.
+CMD vs. ENTRYPOINT - Clear Explanation for This Example:
+
+In this specific example:
+
+ENTRYPOINT (Gunicorn): The ENTRYPOINT ensures that the container always runs Gunicorn. Gunicorn is the core process that serves the web application. You can't run the container without running Gunicorn. It's the required command.
+
+CMD (Default Gunicorn Arguments): The CMD provides the default arguments to Gunicorn. These arguments tell Gunicorn which application to run (app:app) and where to listen for requests (-b 0.0.0.0:8000). These defaults can be overridden when you run the container. It's the suggested command.
+
+Analogy:
+
+Think of it like this:
+
+ENTRYPOINT is like saying, "This container is a Gunicorn web server."
+CMD is like saying, "By default, this Gunicorn server will run the app:app application and listen on port 8000."
+Why This Combination is Powerful:
+
+This combination allows you to create a flexible and configurable web server image.
+
+Easy to Use: The CMD provides sensible defaults, so you can run the container without specifying any additional arguments.
+Configurable: You can override the default arguments by passing arguments to the docker run command. This allows you to customize the Gunicorn settings (e.g., number of workers, binding address) without having to modify the Dockerfile.
+Example Scenarios:
+
+Run with Defaults:
+
+docker run -p 8000:8000 <image_name>
+
+This will run the container with Gunicorn serving the app:app application on port 8000, using the default number of worker processes (which you could add to the CMD if you wanted a default).
+
+Override the Number of Workers:
+
+docker run -p 8000:8000 <image_name> -w 5
+
+This will run the container with Gunicorn serving the app:app application on port 8000, but it will use 5 worker processes instead of the default.
+
+Override the Binding Address:
+
+docker run -p 8000:8000 <image_name> -b 127.0.0.1:8000
+
+This will run the container with Gunicorn serving the app:app application, but it will only listen on the loopback interface (127.0.0.1) on port 8000.
+
+In summary, the ENTRYPOINT ensures that Gunicorn is always running, while the CMD provides the default configuration for Gunicorn, which can be easily overridden when running the container. This combination creates a flexible and easy-to-use web server image
